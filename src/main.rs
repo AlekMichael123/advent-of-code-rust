@@ -5,7 +5,8 @@ use advent_of_code_rust::use_day;
 
 fn main() {
   let Ok((year, day)) = get_args() else {
-    panic!("Error: get_args failed!")
+    println!("Error: get_args failed!");
+    return;
   };
   match read_input_file() {
     Ok(data) => match use_day(year, day, &data) {
