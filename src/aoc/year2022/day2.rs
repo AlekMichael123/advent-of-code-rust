@@ -8,14 +8,21 @@ use std::cmp::Ordering;
 pub fn main(data: &str) {
   let plays = parse_input(data);
   println!("Part 1 -- Get final score for myself -- Score = {}", part1(&plays));
-  println!("Part 2");
+  println!("Part 2 -- Adjust my strategy then get final score -- Score = {}", part2(&plays));
 }
 
 fn part1(plays: &Vec<(Play, Play)>) -> u16 {
   plays
     .iter()
     .map(|(opp, mine)| mine.win_value(opp) as u16)
-		.sum()
+    .sum()
+}
+
+fn part2(plays: &Vec<(Play, Play)>) -> u16 {
+  plays
+    .iter()
+    .map(|(opp, mine)| mine.win_value_with_strategy(opp) as u16)
+    .sum()
 }
 
 fn parse_input(data: &str) -> Vec<(Play, Play)> {
@@ -31,7 +38,23 @@ fn parse_input(data: &str) -> Vec<(Play, Play)> {
     .collect()
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd)]
+enum Strategy {
+  Lose,
+  Draw,
+  Win,
+}
+
+impl From<&Play> for Strategy {
+  fn from(play: &Play) -> Self {
+    match play {
+      Play::Rock => Strategy::Lose,
+      Play::Paper => Strategy::Draw,
+      Play::Scissors => Strategy::Win,
+    }
+  }
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd)]
 enum Play {
   Rock,
   Paper,
@@ -54,6 +77,31 @@ impl Play {
 			Ordering::Greater => 6, // I won!!! :DDD
 		}
 	}
+
+  fn win_value_with_strategy(&self, opp: &Play) -> u8 {
+    let play = match Strategy::from(self) {
+      Strategy::Lose => Play::to_lose(opp),
+      Strategy::Draw => opp,
+      Strategy::Win => Play::to_win(opp),
+    };
+    play.win_value(opp)
+  }
+
+  fn to_lose(play: &Play) -> &Play {
+    match play {
+      Play::Rock => &Play::Scissors,
+      Play::Paper => &Play::Rock,
+      Play::Scissors => &Play::Paper,
+    }
+  }
+
+  fn to_win(play: &Play) -> &Play {
+    match play {
+      Play::Rock => &Play::Paper,
+      Play::Paper => &Play::Scissors,
+      Play::Scissors => &Play::Rock,
+    }
+  }
 }
 
 impl Ord for Play {
