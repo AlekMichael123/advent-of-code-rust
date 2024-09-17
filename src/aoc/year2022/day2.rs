@@ -1,23 +1,22 @@
 use std::cmp::Ordering;
 
-// vs: A for Rock, B for Paper, and C for Scissors.
-// you: X for Rock, Y for Paper, and Z for Scissors
-// The score for a single round is the score for the shape you selected (1 for Rock, 2 for Paper, and 3 for Scissors) 
-// plus the score for the outcome of the round (0 if you lost, 3 if the round was a draw, and 6 if you won).
-
 pub fn main(data: &str) {
   let plays = parse_input(data);
   println!("Part 1 -- Get final score for myself -- Score = {}", part1(&plays));
   println!("Part 2 -- Adjust my strategy then get final score -- Score = {}", part2(&plays));
 }
 
+/// Year 2022 - Day 2 - Part 1\
+/// Need to find the final score if I play to win each game.
 fn part1(plays: &Vec<(Play, Play)>) -> u16 {
   plays
     .iter()
-    .map(|(opp, mine)| mine.win_value(opp) as u16)
+    .map(|(opp, mine)| mine.game_score(opp) as u16)
     .sum()
 }
 
+/// Year 2022 - Day 2 - Part 2\
+/// Need to find the final score for me if I follow the elves' strategies 
 fn part2(plays: &Vec<(Play, Play)>) -> u16 {
   plays
     .iter()
@@ -25,6 +24,7 @@ fn part2(plays: &Vec<(Play, Play)>) -> u16 {
     .sum()
 }
 
+/// Groups input to each game's self & opponent's hand
 fn parse_input(data: &str) -> Vec<(Play, Play)> {
   data
     .lines()
@@ -38,6 +38,8 @@ fn parse_input(data: &str) -> Vec<(Play, Play)> {
     .collect()
 }
 
+/// Used to denote what strategy to use based off the input.\
+/// ie, If the input said to play Rock, we need to lose. 
 enum Strategy {
   Lose,
   Draw,
@@ -54,6 +56,8 @@ impl From<&Play> for Strategy {
   }
 }
 
+/// Represents the choice between rock, paper, or scissor.\ 
+/// Contains methods used to get a game's final score.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd)]
 enum Play {
   Rock,
@@ -62,6 +66,7 @@ enum Play {
 }
 
 impl Play {
+  /// Get numeric value of a play
 	fn value(&self) -> u8 {
 		match self {
 			Play::Rock => 1,
@@ -70,7 +75,8 @@ impl Play {
 		}
 	}
 
-	fn win_value(&self, opp: &Play) -> u8 {
+  /// Computes a game's final score for self
+	fn game_score(&self, opp: &Play) -> u8 {
 		self.value() + match self.cmp(opp) {
 			Ordering::Less => 0, // I lose :C
 			Ordering::Equal => 3, // Draw
@@ -78,15 +84,17 @@ impl Play {
 		}
 	}
 
+  /// Computes final score with the intended strategy in mind. 
   fn win_value_with_strategy(&self, opp: &Play) -> u8 {
     let play = match Strategy::from(self) {
       Strategy::Lose => Play::to_lose(opp),
       Strategy::Draw => opp,
       Strategy::Win => Play::to_win(opp),
     };
-    play.win_value(opp)
+    play.game_score(opp)
   }
 
+  /// Determines what will lose to play
   fn to_lose(play: &Play) -> &Play {
     match play {
       Play::Rock => &Play::Scissors,
@@ -95,6 +103,7 @@ impl Play {
     }
   }
 
+  /// Determines what will win with play
   fn to_win(play: &Play) -> &Play {
     match play {
       Play::Rock => &Play::Paper,
