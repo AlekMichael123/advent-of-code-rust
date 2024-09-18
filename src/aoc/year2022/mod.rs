@@ -5,6 +5,8 @@ pub mod day2;
 pub mod day3;
 pub mod day4;
 
+pub mod util;
+
 pub fn get_solutions() -> HashMap<u8, fn(&str)> {
   let solutions: Vec<(u8, fn(&str))> = vec![
     (1, day1::main),

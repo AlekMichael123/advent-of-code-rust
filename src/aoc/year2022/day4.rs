@@ -1,4 +1,4 @@
-use std::num::ParseIntError;
+use super::util::IntRange;
 
 pub fn main(data: &str) {
   let ranges = parse_input(data);
@@ -33,51 +33,4 @@ fn parse_input(data: &str) -> Vec<(IntRange, IntRange)> {
       )
     })
     .collect()
-}
-
-#[derive(Debug)]
-enum IntRangeError {
-  InvalidParse(ParseIntError),
-  InvalidInput,
-}
-
-impl From<ParseIntError> for IntRangeError {
-  fn from(err: ParseIntError) -> Self {
-    Self::InvalidParse(err)
-  }
-}
-
-#[derive(Debug)]
-struct IntRange {
-  first: u8,
-  last: u8,
-}
-
-impl IntRange {
-  fn completely_overlaps(&self, range: &IntRange) -> bool {
-    self.first <= range.first && self.last >= range.last
-  }
-
-  fn partially_overlaps(&self, range: &IntRange) -> bool {
-    self.first <= range.first && self.last >= range.first 
-    || self.first <= range.last && self.last >= range.last
-  }
-}
-
-impl TryFrom<&str> for IntRange {
-  type Error = IntRangeError;
-  fn try_from(range: &str) -> Result<Self, Self::Error> {
-    let mut range_iter = range.split("-").into_iter();
-    if 
-      let (Some(first), Some(last), None) = 
-        (range_iter.next(), range_iter.next(), range_iter.next())
-    {
-      Ok(Self {
-        first: first.parse()?,
-        last: last.parse()?,
-      })
-    } else {
-      Err(Self::Error::InvalidInput)
-    }
-  }
 }
