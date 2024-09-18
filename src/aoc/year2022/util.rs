@@ -20,7 +20,7 @@ impl IntRange {
 impl TryFrom<&str> for IntRange {
   type Error = IntRangeError;
   fn try_from(range: &str) -> Result<Self, Self::Error> {
-    let mut range_iter = range.split("-").into_iter();
+    let mut range_iter = range.split("-");
     if 
       let (Some(first), Some(last), None) = 
         (range_iter.next(), range_iter.next(), range_iter.next())
