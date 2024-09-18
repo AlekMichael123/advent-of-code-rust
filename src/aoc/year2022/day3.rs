@@ -32,7 +32,8 @@ fn part2(compartments: &Vec<String>) -> u16 {
 
   while 
     let (Some(comp_a), Some(comp_b), Some(comp_c)) = 
-        (comp_iter.next(), comp_iter.next(), comp_iter.next()) {
+        (comp_iter.next(), comp_iter.next(), comp_iter.next()) 
+  {
     let all_matching_letter = 
       comp_a
         .chars()
@@ -48,7 +49,6 @@ fn part2(compartments: &Vec<String>) -> u16 {
         all_matching_letter as u16 - 38
       }
   }
-
   res
 }
 
