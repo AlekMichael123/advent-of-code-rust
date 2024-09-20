@@ -4,8 +4,12 @@ pub fn main(data: &str) {
     Err(err) => panic!("{err}"),
   };
   println!(
-    "Part 1 -- Perform move instructions on crate stacks\nResulting topmost crates = {}", 
+    "Part 1 -- Perform move instructions on crate stacks\nResulting top-most crates = {}", 
     part1(&mut stacks.clone(), &instructions));
+
+  println!(
+    "Part 1 -- Perform move instructions on crate stacks while maintaing their order\nResulting top-most crates = {}", 
+    part2(&mut stacks.clone(), &instructions));
 }
 
 fn part1(stacks: &mut Vec<Vec<char>>, instructions: &Vec<Instruction>) -> String {
@@ -22,6 +26,30 @@ fn part1(stacks: &mut Vec<Vec<char>>, instructions: &Vec<Instruction>) -> String
       }
       cache
         .iter()
+        .for_each(|e| stacks[dest-1].push(*e));
+    });
+  
+  stacks
+    .iter_mut()
+    .filter_map(|stack| stack.pop())
+    .fold("".to_string(), |acc, top| format!("{}{}", acc, top))
+}
+
+fn part2(stacks: &mut Vec<Vec<char>>, instructions: &Vec<Instruction>) -> String {
+  instructions
+    .iter()
+    .for_each(|instruction| {
+      let (amt, src, dest) = *instruction;
+      let mut cache: Vec<char> = vec![];
+      for _ in 0..amt {
+        let Some(top) = stacks[src-1].pop() else {
+          break;
+        };
+        cache.push(top);
+      }
+      cache
+        .iter()
+        .rev()
         .for_each(|e| stacks[dest-1].push(*e));
     });
   
