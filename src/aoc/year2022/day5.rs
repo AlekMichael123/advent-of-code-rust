@@ -106,3 +106,4 @@ fn helper_parse_input_instructions(data_instructions: &str) -> Vec<Instruction> 
 }
 
 type Instruction = (usize, usize, usize);
+
