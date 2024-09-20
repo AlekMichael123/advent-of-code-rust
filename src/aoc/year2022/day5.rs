@@ -43,7 +43,7 @@ fn parse_input(data: &str) -> Result<(Vec<Vec<char>>, Vec<Instruction>), String>
 
 fn helper_parse_input_stacks(data_stacks: &str) -> Vec<Vec<char>> { 
   let mut data_stacks = data_stacks.lines().rev();
-  let stacks_len: Vec<&str> = data_stacks.next().unwrap().split(" ").filter(|e| *e != "").collect();
+  let stacks_len: Vec<&str> = data_stacks.next().unwrap().split_ascii_whitespace().collect();
   let stacks_len = stacks_len.len();
   let mut stacks: Vec<Vec<char>> = vec![vec![]; stacks_len];
 
@@ -66,7 +66,7 @@ fn helper_parse_input_instructions(data_instructions: &str) -> Vec<Instruction> 
     .map(|line| {
       let res: Vec<usize> = 
         line
-          .split(" ")
+          .split_ascii_whitespace()
           .filter_map(|e| {
             if let Ok(res) = e.parse() {
               Some(res)
