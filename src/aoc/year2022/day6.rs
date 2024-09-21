@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 pub fn main(data: &str) {
   println!("Part 1 -- Find beginning of message [size = 4]\ni = {}", part1(data));
   println!("Part 2 -- Find beginning of message [size = 14]\ni = {}", part2(data));
@@ -27,9 +25,12 @@ fn perform(data: &str, size: usize) -> usize {
   }
 
   fn check_candidates(candidates: &Vec<char>, size: usize) -> bool {
-    let mut set: HashSet<char> = HashSet::new();
-    candidates.iter().for_each(|c| { set.insert(*c); });
-    set.len() == size
+    for c in candidates {
+      if candidates.iter().filter(|cand| *cand != c).count() != size - 1 {
+        return false;
+      }
+    }
+    true
   }
 
   let mut candidates: Vec<char> = vec![' '; size];
