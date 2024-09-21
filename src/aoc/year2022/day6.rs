@@ -33,7 +33,7 @@ fn perform(data: &str, size: usize) -> usize {
     true
   }
 
-  let mut candidates: Vec<char> = vec![' '; size];
+  let mut candidates: Vec<char> = vec![char::default(); size];
   data
     .char_indices()
     .find(|(i, c)| {
