@@ -1,5 +1,4 @@
 pub fn main(data: &str) {
-  // println!("{:#?}", parse_input(data));
   let filesystem = parse_input(data);
 
   println!(
@@ -40,6 +39,7 @@ fn parse_input(data: &str) -> Directory {
     .for_each(|line| {
       let mut line = line.split_ascii_whitespace();
       let Some(first_token) = line.next() else { panic!("parse_input: Somehow a blank line is in the input. Check format.") };
+      // yeah sure this is fine lol
       match first_token {
         "$" => match line.next().unwrap() {
           "cd" => match line.next().unwrap() {
@@ -70,12 +70,13 @@ fn parse_input(data: &str) -> Directory {
   head
 }
 
+type FileSize = u32;
 
 #[derive(Debug)]
 struct Directory {
   name: String,
   inner_dirs: Vec<Directory>,
-  inner_files: Vec<NamedFile>, // TODO: adjust later
+  inner_files: Vec<FileSize>, // TODO: adjust later
 }
 
 impl Default for Directory {
@@ -94,7 +95,7 @@ impl Directory {
   }
 
   fn mkfile(&mut self, name: String, size: FileSize) {
-    self.inner_files.push(NamedFile::new(name, size));
+    self.inner_files.push(size);
   }
 
   fn find_dir(&mut self, name: String) -> Option<&mut Directory> {
@@ -118,7 +119,7 @@ impl Directory {
       self
         .inner_files
         .iter()
-        .map(|file| file.size)
+        .map(|size| size)
         .sum();
     
     total_directory_size + total_file_size
@@ -138,19 +139,5 @@ impl Directory {
     }
 
     res
-  }
-}
-
-type FileSize = u128;
-
-#[derive(Debug, Default)]
-struct NamedFile {
-  name: String,
-  size: FileSize,
-}
-
-impl NamedFile {
-  fn new(name: String, size: FileSize) -> Self {
-    Self { name, size, }
   }
 }
