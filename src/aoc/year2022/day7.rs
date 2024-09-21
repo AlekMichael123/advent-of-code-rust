@@ -6,6 +6,11 @@ pub fn main(data: &str) {
     "Part 1 -- Find all directories in a filesystem that are at most 100,000 in size -- \n# of directories = {}",
     part1(&filesystem),
   );
+
+  println!(
+    "Part 2 -- Find smallest directory to delete to get at least 30000000 unused space -- \nSize of deleted dir = {}",
+    part2(&filesystem),
+  );
 }
 
 fn part1(filesystem: &Directory) -> FileSize {
@@ -13,6 +18,18 @@ fn part1(filesystem: &Directory) -> FileSize {
     .iter()
     .filter(|size| **size <= 100_000)
     .sum()
+}
+
+fn part2(filesystem: &Directory) -> FileSize {
+  let total_unused_space = 70_000_000 - filesystem.calc_dir_size();
+  let mut candidates: Vec<FileSize> = 
+    Directory::calc_all_dir_sizes(filesystem)
+      .into_iter()
+      .filter(|size| total_unused_space + *size >= 30_000_000)
+      .collect();
+      
+  candidates.sort_unstable();
+  candidates[0]
 }
 
 fn parse_input(data: &str) -> Directory {
@@ -90,12 +107,12 @@ impl Directory {
       .find(|dir| *dir.name == name)
   }
 
-  fn calc_dir_sizes(&self) -> FileSize {
+  fn calc_dir_size(&self) -> FileSize {
     let total_directory_size: FileSize = 
       self
         .inner_dirs
         .iter()
-        .map(|dir| dir.calc_dir_sizes())
+        .map(|dir| dir.calc_dir_size())
         .sum();
     let total_file_size: FileSize =
       self
@@ -113,7 +130,7 @@ impl Directory {
 
     while !left_to_do.is_empty() {
       let curr = left_to_do.pop().unwrap();
-      res.push(curr.calc_dir_sizes());
+      res.push(curr.calc_dir_size());
       curr
         .inner_dirs
         .iter()
