@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 
 pub fn main(data: &str) {
-  println!("Part 1 -- Find beginning of signal [size = 4]-- i = {}", part1(data));
-  println!("Part 2 -- Find beginning of signal [size = 14]-- i = {}", part2(data));
+  println!("Part 1 -- Find beginning of message [size = 4]\ni = {}", part1(data));
+  println!("Part 2 -- Find beginning of message [size = 14]\ni = {}", part2(data));
 }
 
 fn part1(data: &str) -> usize {
