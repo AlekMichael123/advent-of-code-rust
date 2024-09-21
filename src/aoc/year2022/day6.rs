@@ -1,15 +1,24 @@
 use std::collections::HashSet;
 
 pub fn main(data: &str) {
-  println!("Part 1 -- Find beginning of signal -- i = {}", part1(data));
+  println!("Part 1 -- Find beginning of signal [size = 4]-- i = {}", part1(data));
+  println!("Part 2 -- Find beginning of signal [size = 14]-- i = {}", part2(data));
 }
 
-
 fn part1(data: &str) -> usize {
-  fn rotate_candidates(latest: char, candidates: &mut [char; 4]) {
+  perform(data, 4)
+}
+
+fn part2(data: &str) -> usize {
+  perform(data, 14)
+}
+
+fn perform(data: &str, size: usize) -> usize {
+  fn rotate_candidates(latest: char, candidates: &mut Vec<char>) {
     let mut carry = latest;
     candidates
       .iter_mut()
+      .rev()
       .for_each(|c| {
         let temp = c.clone();
         *c = carry;
@@ -17,20 +26,20 @@ fn part1(data: &str) -> usize {
       });
   }
 
-  fn check_candidates(candidates: [char; 4]) -> bool {
+  fn check_candidates(candidates: &Vec<char>, size: usize) -> bool {
     let mut set: HashSet<char> = HashSet::new();
     candidates.iter().for_each(|c| { set.insert(*c); });
-    set.len() == 4
+    set.len() == size
   }
 
-  let mut candidates = [' '; 4];
+  let mut candidates: Vec<char> = vec![' '; size];
   data
     .char_indices()
     .find(|(i, c)| {
-      if (0..=3).contains(i) {
+      if (0..=size-1).contains(i) {
         candidates[*i] = *c;
         false
-      } else if check_candidates(candidates) {
+      } else if check_candidates(&candidates, size) {
         true
       } else {
         rotate_candidates(*c, &mut candidates);
