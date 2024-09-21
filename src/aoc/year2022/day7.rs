@@ -1,4 +1,5 @@
 pub fn main(data: &str) {
+  // create simulated filesystem, maybe couldve used less abstraction but I think the parts came out nice
   let filesystem = parse_input(data);
 
   println!(
@@ -12,6 +13,9 @@ pub fn main(data: &str) {
   );
 }
 
+/// Calculate the size of each directory in the filesystem 
+/// then remove all sizes that we don't care about. 
+/// Then, add up the remaining directories.
 fn part1(filesystem: &Directory) -> FileSize {
   Directory::calc_all_dir_sizes(filesystem)
     .iter()
@@ -19,6 +23,8 @@ fn part1(filesystem: &Directory) -> FileSize {
     .sum()
 }
 
+/// Calculate the directory sizes then only keep the directories that could reach us
+/// to the required unused memory space (30000000). Then, extract the smallest usable directory!
 fn part2(filesystem: &Directory) -> FileSize {
   let total_unused_space = 70_000_000 - filesystem.calc_dir_size();
   let mut candidates: Vec<FileSize> = 
@@ -27,13 +33,13 @@ fn part2(filesystem: &Directory) -> FileSize {
       .filter(|size| total_unused_space + *size >= 30_000_000)
       .collect();
       
-  candidates.sort_unstable();
+  candidates.sort_unstable(); // order doesn't matter, so using "sort_unstable" which is supposedly faster
   candidates[0]
 }
 
 fn parse_input(data: &str) -> Directory {
-  let mut head = Directory::default();
-  let mut path = vec!["/".to_string()];
+  let mut head = Directory::default(); // create new directory head
+  let mut path = vec!["/".to_string()]; // path to keep track where we're at with the cd's
   data
     .lines()
     .for_each(|line| {
@@ -43,27 +49,27 @@ fn parse_input(data: &str) -> Directory {
       match first_token {
         "$" => match line.next().unwrap() {
           "cd" => match line.next().unwrap() {
-            ".." => { path.pop(); },
-            cd_dir => match cd_dir {
-              "/" => { path = vec!["/".to_string()]; },
-              d => path.push(d.to_string()),
+            ".." => { path.pop(); }, // move up in tree
+            cd_dir => match cd_dir { // move to directory 
+              "/" => { path = vec!["/".to_string()]; }, // go back to top (only used once lol???)
+              d => path.push(d.to_string()), // change to named directory
             },
           },
           _ => (),
         },
         "dir" => {
-          let mut dir = &mut head;
+          let mut dir = &mut head; // go to "current" directory by following path
           for dir_name in &path {
             dir = dir.find_dir(dir_name.clone()).unwrap();
           }
-          dir.mkdir(line.next().unwrap().to_string());
+          dir.mkdir(line.next().unwrap().to_string()); // create directory with name
         },
         size => {
-          let mut dir = &mut head;
+          let mut dir = &mut head; // go to "current" directory by following path
           for dir_name in &path {
             dir = dir.find_dir(dir_name.clone()).unwrap();
           }
-          dir.mkfile(line.next().unwrap().to_string(), size.parse().expect("parse_input: Parsing file size failed."));
+          dir.mkfile(size.parse().expect("parse_input: Parsing file size failed.")); // create file with size 
         },
       }
     });
@@ -76,7 +82,7 @@ type FileSize = u32;
 struct Directory {
   name: String,
   inner_dirs: Vec<Directory>,
-  inner_files: Vec<FileSize>, // TODO: adjust later
+  inner_files: Vec<FileSize>,
 }
 
 impl Default for Directory {
@@ -90,14 +96,17 @@ impl Directory {
     Self { name, ..Default::default() }
   }
 
+  /// create sub directory
   fn mkdir(&mut self, name: String) {
     self.inner_dirs.push(Directory::new(name));
   }
 
-  fn mkfile(&mut self, name: String, size: FileSize) {
+  /// create file in self
+  fn mkfile(&mut self, size: FileSize) {
     self.inner_files.push(size);
   }
 
+  /// find sub directory in self with name
   fn find_dir(&mut self, name: String) -> Option<&mut Directory> {
     if self.name == name {
       return Some(self);
@@ -108,6 +117,7 @@ impl Directory {
       .find(|dir| *dir.name == name)
   }
 
+  /// calculate total size in self
   fn calc_dir_size(&self) -> FileSize {
     let total_directory_size: FileSize = 
       self
@@ -125,6 +135,7 @@ impl Directory {
     total_directory_size + total_file_size
   }
 
+  // calc all directory sizes starting at given directory
   fn calc_all_dir_sizes(directory: &Directory) -> Vec<FileSize> {
     let mut res = vec![];
     let mut left_to_do: Vec<&Directory> = vec![directory];
