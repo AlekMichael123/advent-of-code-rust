@@ -20,7 +20,6 @@ fn part1(data: &str) -> usize {
   fn check_candidates(candidates: [char; 4]) -> bool {
     let mut set: HashSet<char> = HashSet::new();
     candidates.iter().for_each(|c| { set.insert(*c); });
-    println!("{:?} {:?}", candidates, set);
     set.len() == 4
   }
 
