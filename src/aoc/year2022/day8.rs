@@ -5,9 +5,14 @@ pub fn main(data: &str) {
     "Part 1 -- Find number of trees visible from standing around the grid\n# of visible trees = {}",
     part1(&tree_heights),
   );
+
+  println!(
+    "Part 2 -- Find tree with highest scenic view value\n# of visible trees = {}",
+    part2(&tree_heights),
+  );
 }
 
-fn part1(tree_heights: &TreeHeights) -> u32 {
+fn part1(tree_heights: &TreeHeights) -> u16 {
   TreeVisibility::calc_tree_visibilities(tree_heights)
     .iter()
     .map(|row| 
@@ -19,9 +24,17 @@ fn part1(tree_heights: &TreeHeights) -> u32 {
             TreeVisibility::NotVisible => 0,
           }
         )
-        .sum::<u32>()
+        .sum::<u16>()
     )
     .sum()
+}
+
+fn part2(tree_heights: &TreeHeights) -> u32 {
+  *TreeVisibility::calc_scenic_scores(tree_heights)
+    .iter()
+    .map(|row| row.iter().max().unwrap())
+    .max()
+    .unwrap()
 }
 
 fn parse_input(data: &str) -> TreeHeights {
@@ -38,8 +51,9 @@ fn parse_input(data: &str) -> TreeHeights {
 
 type TreeHeights = Vec<Vec<u8>>;
 type TreeVisibilities = Vec<Vec<TreeVisibility>>;
+type ScenicScores = Vec<Vec<u32>>;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 enum TreeVisibility {
   Visible,
   NotVisible,
@@ -100,5 +114,62 @@ impl TreeVisibility {
     }
 
     tree_visibilities
+  }
+
+  fn calc_scenic_scores(tree_heights: &TreeHeights) -> ScenicScores {
+    let n = tree_heights.len();
+    let m = tree_heights.first().expect("calc_tree_visibilities: tree_heights contains empty vectors").len();
+
+    let mut scenic_scores: ScenicScores = vec![vec![0; m]; n];
+
+    for i in 0..n {
+      for j in 0..m {
+        let comparable_tree_height = tree_heights[i][j];
+        // try up
+        let mut upwards_count: u32 = 0;
+        for i in (0..i).rev() {
+          let tree_height = tree_heights[i][j];
+          upwards_count += 1;
+
+          if tree_height >= comparable_tree_height {
+            break;
+          }
+        }
+        // try down
+        let mut downards_count: u32 = 0;
+        for i in i+1..n {
+          let tree_height = tree_heights[i][j];
+          downards_count += 1;
+
+          if tree_height >= comparable_tree_height {
+            break;
+          }
+        }
+        // try left
+        let mut leftward_count: u32 = 0;
+        for j in (0..j).rev() {
+          let tree_height = tree_heights[i][j];
+          leftward_count += 1;
+
+          if tree_height >= comparable_tree_height {
+            break;
+          }
+        }
+        // try right
+        let mut rightward_count: u32 = 0;
+        for j in j+1..m {
+          let tree_height = tree_heights[i][j];
+          rightward_count += 1;
+
+          if tree_height >= comparable_tree_height {
+            break;
+          }
+        }
+
+        scenic_scores[i][j] = upwards_count * downards_count * leftward_count * rightward_count;
+      }
+    }
+
+    scenic_scores
   }
 }
