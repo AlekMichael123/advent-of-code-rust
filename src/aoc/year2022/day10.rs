@@ -47,22 +47,22 @@ impl CPU {
     }
   }
 
-  fn tick(&mut self, amount: i32) {
+  fn tick(&mut self) {
     self.xs.push(self.x);
-    self.cycle += amount;
+    self.cycle += 1;
     if (self.cycle - 20) % 40 == 0 {
       self.signal_strengths.push(self.x * self.cycle);
     }
   }
 
   fn addx(&mut self, value: i32) {
-    self.tick(1);
-    self.tick(1);
+    self.tick();
+    self.tick();
     self.x += value;
   }
 
   fn noop(&mut self) {
-    self.tick(1);
+    self.tick();
   }
 
   fn parse_command(&mut self, command_line: &str) {
