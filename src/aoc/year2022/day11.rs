@@ -1,20 +1,29 @@
 pub fn main(data: &str) {
   let monkeys = parse_data(data);
   
-  // println!("Monkeys: {:#?}", monkeys);
-
   println!("Part 1");
   let part1_result = part1(monkeys.clone());
   println!("Top 2 Important Monkeys Multiplied: {}", part1_result);
+
+  println!("Part 2");
+  let part2_result = part2(monkeys);
+  println!("Top 2 Important Monkeys Multiplied: {}", part2_result);
 }
 
 fn part1(mut monkeys: Vec<Monkey>) -> i64 {
-  let rounds = 20;
+  run_rounds(&mut monkeys, 20, true, 3)
+}
 
+fn part2(mut monkeys: Vec<Monkey>) -> i64 {
+  let scale_factor = monkeys.iter().map(|monkey| monkey.divisor_test).product::<i64>();
+  run_rounds(&mut monkeys, 10_000, false, scale_factor)
+}
+
+fn run_rounds(monkeys: &mut Vec<Monkey>, rounds: i64, divide_or_mod: bool, scale_factor: i64) -> i64 {
   for _ in 0..rounds {
     for i in 0..monkeys.len() {
       while !monkeys[i].items.is_empty() {
-        let (item, next_monkey) = monkeys[i].inspect();
+        let (item, next_monkey) = monkeys[i].inspect(divide_or_mod, scale_factor);
         monkeys[next_monkey].items.push(item);
       }
     }
@@ -59,14 +68,21 @@ impl Monkey {
     Self { items, operation, operation_value, divisor_test, if_true, if_false, total_inspections: 0 }
   }
 
-  fn inspect(&mut self) -> (i64, usize) {
+  fn inspect(&mut self, mod_or_divide: bool, scale_factor: i64) -> (i64, usize) {
     self.total_inspections += 1;
     let item = self.items.remove(0);
-    let new_item = match self.operation {
+    let mut new_item = match self.operation {
       '+' => item + self.operation_value.unwrap_or(item),
       '*' => item * self.operation_value.unwrap_or(item),
       _ => panic!("Unknown operation"),
-    } / 3;
+    };
+
+    if mod_or_divide {
+      new_item /= scale_factor;
+    } else {
+      new_item %= scale_factor;
+    }
+
     let next_monkey = if new_item % self.divisor_test == 0 { self.if_true } else { self.if_false };
     (new_item, next_monkey)
   }
