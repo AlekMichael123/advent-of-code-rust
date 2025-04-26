@@ -11,6 +11,7 @@ pub mod day8;
 pub mod day9;
 pub mod day10;
 pub mod day11;
+pub mod day12;
 
 pub mod util;
 
@@ -27,6 +28,7 @@ pub fn get_solutions() -> HashMap<u8, fn(&str)> {
     (9, day9::main),
     (10, day10::main),
     (11, day11::main),
+    (12, day12::main),
   ];
 
   solutions.into_iter().collect()

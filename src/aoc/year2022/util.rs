@@ -46,3 +46,7 @@ impl From<ParseIntError> for IntRangeError {
     Self::InvalidParse(err)
   }
 }
+
+pub fn out_of_bounds(x: usize, y: usize, max_x: usize, max_y: usize) -> bool {
+  x >= max_x || y >= max_y
+}
