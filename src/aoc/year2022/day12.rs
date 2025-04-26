@@ -2,23 +2,22 @@ use super::util::out_of_bounds;
 
 pub fn main(data: &str) {
   let ranges = parse_data(data);
+  let mountain_range = MountainRange::new(ranges);
 
   println!("Part 1");
-  let shortest_path_distance = part1(ranges.clone());
+  let shortest_path_distance = part1(&mountain_range);
   println!("Shortest path distance: {}", shortest_path_distance);
 
   println!("Part 2");
-  let shortest_path_distance = part2(ranges);
+  let shortest_path_distance = part2(&mountain_range);
   println!("Shortest path distance: {}", shortest_path_distance);
 }
 
-fn part1(ranges: Vec<Vec<char>>) -> i64 {
-  let mountain_range = MountainRange::new(ranges);
+fn part1(mountain_range: &MountainRange) -> i64 {
   mountain_range.find_shortest_path_from_s()
 }
 
-fn part2(ranges: Vec<Vec<char>>) -> i64 {
-  let mountain_range = MountainRange::new(ranges);
+fn part2(mountain_range: &MountainRange) -> i64 {
   mountain_range.find_shortest_path_from_any_a()
 }
 
@@ -26,12 +25,14 @@ fn parse_data(data: &str) -> Vec<Vec<char>> {
   data.lines().map(|line| line.chars().collect()).collect()
 }
 
+type Position = (usize, usize);
+
 #[derive(Debug, Clone)]
 struct MountainRange {
   ranges: Vec<Vec<u64>>,
-  start_s: (usize, usize),
-  starting_positions: Vec<(usize, usize)>,
-  end: (usize, usize),
+  start_s: Position,
+  starting_positions: Vec<Position>,
+  end: Position,
 }
 
 impl MountainRange {
@@ -59,16 +60,16 @@ impl MountainRange {
 
   fn find_shortest_path_from_any_a(&self) -> i64 {
     let mut shortest_path = i64::MAX;
-    for start in &self.starting_positions {
-      let path_distance = self.find_shortest_path(*start);
-      if path_distance != -1 && path_distance < shortest_path {
-        shortest_path = path_distance;
+    self.starting_positions.iter().for_each(|&start| {
+      let path_distance = self.find_shortest_path(start);
+      if path_distance != -1 {
+        shortest_path = shortest_path.min(path_distance);
       }
-    }
+    });
     shortest_path
   }
   
-  fn find_shortest_path(&self, start: (usize, usize)) -> i64 {
+  fn find_shortest_path(&self, start: Position) -> i64 {
     let mut directions = vec![
       (start.0, start.1, start.0.wrapping_add(1), start.1, 1),
       (start.0, start.1, start.0.wrapping_sub(1), start.1, 1),
@@ -107,5 +108,4 @@ impl MountainRange {
 
     -1
   }
-
 }
