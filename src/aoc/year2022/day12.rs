@@ -1,5 +1,4 @@
 use super::util::out_of_bounds;
-use std::collections::VecDeque;
 
 pub fn main(data: &str) {
   let ranges = parse_data(data);
