@@ -34,9 +34,9 @@ impl MountainRange {
       row.iter().position(|&c| c == 'E').map(|x| (x, y))
     }).unwrap_or((0, 0));
     ranges[end.1][end.0] = 'z';
-    println!("start: {:?}", start);
-    println!("end: {:?}", end);
-    MountainRange { ranges: ranges.iter().map(|row| row.iter().map(|&c| c as u64).collect()).collect(), start: start, end: end, }
+    // println!("start: {:?}", start);
+    // println!("end: {:?}", end);
+    MountainRange { ranges: ranges.iter().map(|row| row.iter().map(|&c| c as u64).collect()).collect(), start, end, }
   }
 
   fn find_shortest_path(&self) -> i64 {
