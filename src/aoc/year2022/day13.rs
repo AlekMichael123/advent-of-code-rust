@@ -1,11 +1,16 @@
 pub fn main(data: &str) {
   let lines = parse_data(data);
+
   println!("Part 1");
-  let score = part1(lines);
-  println!("Score = {score}");
+  let sum = part1(&lines);
+  println!("Sum = {sum}");
+
+  println!("Part 2");
+  let distress_signal = part2(&flatten(&lines));
+  println!("Distress signal = {distress_signal}");
 }
 
-fn part1(lines: Vec<(ValueLine, ValueLine)>) -> u64 {
+fn part1(lines: &Vec<(ValueLine, ValueLine)>) -> u64 {
   let mut score = 0;
   for (i, (left, right)) in lines.iter().enumerate() {
     if left.compare(right) {
@@ -14,6 +19,28 @@ fn part1(lines: Vec<(ValueLine, ValueLine)>) -> u64 {
     }
   }
   score
+}
+
+fn part2(frequencies: &Vec<ValueLine>) -> u64 {
+  let mut all_lines = frequencies.clone();
+  let divider1 = ValueLine::from("[[2]]");
+  let divider2 = ValueLine::from("[[6]]");
+  all_lines.push(divider1.clone());
+  all_lines.push(divider2.clone());
+  all_lines.sort();
+
+  let index1 = all_lines.iter().position(|value_line| value_line == &divider1).unwrap() + 1;
+  let index2 = all_lines.iter().position(|value_line| value_line == &divider2).unwrap() + 1;
+  index1 as u64 * index2 as u64
+}
+
+fn flatten(lines: &Vec<(ValueLine, ValueLine)>) -> Vec<ValueLine> {
+  let mut all_lines = Vec::new();
+  for (left, right) in lines.iter() {
+    all_lines.push(left.clone());
+    all_lines.push(right.clone());
+  }
+  all_lines
 }
 
 fn parse_data(data: &str) -> Vec<(ValueLine, ValueLine)> {
@@ -35,13 +62,13 @@ fn parse_data(data: &str) -> Vec<(ValueLine, ValueLine)> {
   lines
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 enum ValueLineType {
   Integer(u64),
   List(ValueLine),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct ValueLine {
   values: Vec<ValueLineType>,
 }
@@ -80,6 +107,21 @@ impl From<&str> for ValueLine {
     }
 
     stack.pop().unwrap()
+  }
+}
+
+impl Ord for ValueLine {
+  fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    if self.compare(other) {
+      std::cmp::Ordering::Less
+    } else {
+      std::cmp::Ordering::Greater
+    }
+  }
+}
+impl PartialOrd for ValueLine {
+  fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    Some(self.cmp(other))
   }
 }
 
@@ -137,9 +179,9 @@ impl ValueLine {
     }
 
     if other_iter.is_empty() { 
-      false // self is in the correct order
+      false 
     } else {
-      true // other is in the correct order
+      true 
     } 
   }
 
