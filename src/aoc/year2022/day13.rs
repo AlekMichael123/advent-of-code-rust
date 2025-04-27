@@ -14,7 +14,7 @@ fn part1(lines: &Vec<(ValueLine, ValueLine)>) -> u64 {
   let mut score = 0;
   for (i, (left, right)) in lines.iter().enumerate() {
     if left.compare(right) {
-      // println!("Pair {} is in the correct order: {} vs {}", i+1, left.to_string(), right.to_string());
+      println!("Pair {} is in the correct order: {} vs {}", i+1, left.to_string(), right.to_string());
       score += i as u64 + 1;
     }
   }
