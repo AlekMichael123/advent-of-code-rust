@@ -8,7 +8,7 @@ pub fn main(data: &str) {
 fn part1(lines: Vec<(ValueLine, ValueLine)>) -> u64 {
   let mut score = 0;
   for (i, (left, right)) in lines.iter().enumerate() {
-    if left.compare(right) == 1 {
+    if left.compare(right) {
       // println!("Pair {} is in the correct order: {} vs {}", i+1, left.to_string(), right.to_string());
       score += i as u64 + 1;
     }
@@ -75,7 +75,7 @@ impl From<&str> for ValueLine {
         _ if c.is_digit(10) => {
           current_number.push(c);
         },
-        _ => {},
+        _ => unreachable!(),
       }
     }
 
@@ -88,75 +88,58 @@ impl ValueLine {
     Self { values: Vec::new() }
   }
 
-  // 1 if self/other are in the correct order
-  fn compare(&self, other: &Self) -> u8 {
+  // true if self/other are in the correct order
+  fn compare(&self, other: &Self) -> bool {
     use ValueLineType::*;
 
     let mut self_iter = self.values.clone();
     let mut other_iter = other.values.clone();
     while !self_iter.is_empty() && !other_iter.is_empty() {
-      let left = self_iter[0].clone();
-      let right = other_iter[0].clone();
+      let left = self_iter.remove(0);
+      let right = other_iter.remove(0);
 
       match (left, right) {
-        (Integer(left_value), Integer(right_value)) => {
-          if left_value < right_value {
-            return 1;
-          } else if left_value > right_value {
-            return 0;
+        (Integer(left_integer), Integer(right_integer)) => {
+          if left_integer < right_integer {
+            return true;
+          } else if left_integer > right_integer {
+            return false;
           }
-          // both left and right are equal, continue to next value
-          self_iter.remove(0);
-          other_iter.remove(0);
         },
         (List(left_list), List(right_list)) => {
-          if left_list.compare(&right_list) == 1 {
-            return 1;
-          } else if right_list.compare(&left_list) == 1 {
-            return 0;
+          if left_list.compare(&right_list) {
+            return true;
+          } else if right_list.compare(&left_list) {
+            return false;
           }
-          // both left and right are equal, continue to next value
-          self_iter.remove(0);
-          other_iter.remove(0);
         },
-        (Integer(left_value), List(right_list)) => {
-          // convert left_value to a list and compare
+        (Integer(left_integer), List(right_list)) => {
           let mut left_list = ValueLine::new();
-          left_list.values.push(Integer(left_value));
+          left_list.values.push(Integer(left_integer));
          
-          if left_list.compare(&right_list) == 1 {
-            return 1;
-          } else if right_list.compare(&left_list) == 1 {
-            return 0;
+          if left_list.compare(&right_list) {
+            return true;
+          } else if right_list.compare(&left_list) {
+            return false;
           }
-
-          self_iter.remove(0);
-          other_iter.remove(0);
         },
-        (List(left_list), Integer(right_value)) => {
-          // convert right_value to a list and compare
+        (List(left_list), Integer(right_integer)) => {
           let mut right_list = ValueLine::new();
-          right_list.values.push(Integer(right_value));
+          right_list.values.push(Integer(right_integer));
          
-          if left_list.compare(&right_list) == 1 {
-            return 1;
-          } else if right_list.compare(&left_list) == 1 {
-            return 0;
+          if left_list.compare(&right_list) {
+            return true;
+          } else if right_list.compare(&left_list) {
+            return false;
           }
-
-          self_iter.remove(0);
-          other_iter.remove(0);
         },
       }
-      // match (self_next, other_next) {
-      //   (Integer(self_value), Integer(other_value)) 
-      // }
     }
 
     if other_iter.is_empty() { 
-      0 // self is in the correct order
+      false // self is in the correct order
     } else {
-      1 // other is in the correct order
+      true // other is in the correct order
     } 
   }
 
