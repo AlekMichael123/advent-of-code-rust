@@ -12,31 +12,23 @@ pub fn main(data: &str) {
 }
 
 fn part1(sensors: &Vec<Sensor>, y: i64) -> i64 {
-  let mut counted = HashSet::new();
-  let mut beacons_at_y = HashSet::new();
+
+  let ranges = Sensor::merge_x_covered_ranges_for_y(y, &mut sensors.clone());
+
+  let beacons_on_y = sensors
+    .iter()
+    .filter(|sensor| sensor.beacon.y == y)
+    .map(|sensor| sensor.beacon.x)
+    .collect::<HashSet<i64>>()
+    .iter()
+    .count();
+
+  let position_count = ranges
+    .iter()
+    .map(|range| range.1 - range.0 + 1)
+    .sum::<i64>();
   
-  for sensor in sensors {
-    let total_range = sensor.total_range();
-    let distance_to_y = (sensor.pos.y - y).abs();
-
-    if distance_to_y <= total_range {
-      let x_range = total_range - distance_to_y;
-      let lower_bound = sensor.pos.x - x_range;
-      let upper_bound = sensor.pos.x + x_range;
-
-      for x in lower_bound..=upper_bound {
-        if !beacons_at_y.contains(&x) {
-          counted.insert(x);
-        }
-      }
-    }
-
-    if sensor.beacon.y == y {
-      beacons_at_y.insert(sensor.beacon.x);
-    }
-  }
-
-  counted.len() as i64 - beacons_at_y.len() as i64
+  position_count - beacons_on_y as i64
 }
 
 fn parse_data(data: &str) -> Vec<Sensor> {
@@ -94,5 +86,38 @@ impl Sensor {
     } else {
       None
     }
+  }
+
+  // shoutout to for this idea, https://github.com/WinterCore/aoc2022/blob/main/day15/main.rs#L82
+  // at first i was just using a HashSet to store the ranges, but that was slow and sucked butt
+  fn merge_x_covered_ranges_for_y(
+    y: i64,
+    ranges: &mut Vec<Sensor>,
+  ) -> Vec<(i64, i64)> {
+    
+    let mut ranges = ranges
+      .iter()
+      .filter_map(|sensor| sensor.x_covered_range_for_y(y))
+      .collect::<Vec<(i64, i64)>>();
+
+    ranges.sort_by_key(|r| r.0);
+
+    let mut result = Vec::new();
+
+    let mut acc = ranges[0];
+    for i in 1..ranges.len() {
+      let range = ranges[i];
+      if acc.1 >= (range.0-1) {
+        acc.1 = acc.1.max(range.1);
+      } else {
+        result.push(acc);
+        acc = range;
+      }
+    }
+
+    result.push(acc);
+
+
+    result
   }
 }
