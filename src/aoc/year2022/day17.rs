@@ -1,5 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
+// TODO: Clean this up a little i.e. abstract inner loop
+
 pub fn main(data: &str) {
   let jet_order = parse_data(data);
 
@@ -106,7 +108,9 @@ fn simulate_with_memoization(jet_order: &Vec<char>, total_cycles: i64) -> u64 {
       let calculated_height = (total_cycles * height_gained_per_cycle) as u64;
       return simulate_without_memoization(jet_order, shape_index, jet_index, highest_height, leftover_cycles, Some(landed_positions)) + calculated_height;
     }
+    
     curr_shape = Shape::new(shape_order[shape_index].clone(), (2, highest_height + 4));
+    
     loop {
       curr_shape = curr_shape.wind_blow(jet_order[jet_index], &landed_positions);
       jet_index = (jet_index + 1) % jet_order.len();
@@ -125,8 +129,10 @@ fn simulate_with_memoization(jet_order: &Vec<char>, total_cycles: i64) -> u64 {
         landed_positions.extend(positions);
         break;
       }
+      
       curr_shape = next_shape;
     }
+    
     shape_index = (shape_index + 1) % shape_order.len();
     time += 1;
   }
