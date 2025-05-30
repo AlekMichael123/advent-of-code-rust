@@ -12,17 +12,17 @@ pub fn main(data: &str) {
 
 fn part1(jet_order: Vec<char>) -> u64 {
   let shape_order = vec![
-    ShapeType::FlatLine, 
-    ShapeType::Plus, 
-    ShapeType::BackwardsL, 
-    ShapeType::I, 
+    ShapeType::FlatLine,
+    ShapeType::Plus,
+    ShapeType::BackwardsL,
+    ShapeType::I,
     ShapeType::Square,
   ];
   let mut shape_index = 0;
   let mut jet_index = 0;
   let mut highest_height = 0;
   let mut curr_shape = Shape::new(
-    shape_order[shape_index].clone(), 
+    shape_order[shape_index].clone(),
     (2, highest_height + 4)
   );
   let mut landed_positions = HashSet::new();
@@ -39,7 +39,7 @@ fn part1(jet_order: Vec<char>) -> u64 {
       
       if next_shape.get_current_positions()
           .iter()
-          .any(|pos| landed_positions.contains(pos)) 
+          .any(|pos| landed_positions.contains(pos))
       {
         highest_height = highest_height.max(curr_shape.get_height());
         landed_positions.extend(curr_shape.get_current_positions());
@@ -74,16 +74,14 @@ struct Shape {
 
 impl Shape {
   fn new(shape_type: ShapeType, position: (i64, i64)) -> Self {
-    let mut directions = match shape_type {
-      ShapeType::FlatLine => vec![(0, 0), (1, 0), (2, 0), (3, 0)],
-      ShapeType::Plus      => vec![(1, 0), (0, 1), (1, 1), (2, 1), (1, 2)],
-      ShapeType::BackwardsL => vec![(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)],
-      ShapeType::I         => vec![(0, 0), (0, 1), (0, 2), (0, 3)],
-      ShapeType::Square    => vec![(0, 0), (1, 0), (0, 1), (1, 1)],
-    };
-
     Self {
-      directions,
+      directions: match shape_type {
+        ShapeType::FlatLine => vec![(0, 0), (1, 0), (2, 0), (3, 0)],
+        ShapeType::Plus      => vec![(1, 0), (0, 1), (1, 1), (2, 1), (1, 2)],
+        ShapeType::BackwardsL => vec![(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)],
+        ShapeType::I         => vec![(0, 0), (0, 1), (0, 2), (0, 3)],
+        ShapeType::Square    => vec![(0, 0), (1, 0), (0, 1), (1, 1)],
+      },
       position,
     }
   }
