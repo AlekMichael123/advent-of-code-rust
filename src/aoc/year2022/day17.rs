@@ -30,7 +30,7 @@ fn part1(jet_order: Vec<char>) -> u64 {
     landed_positions.insert((x, 0));
   });
 
-  (1..=2022).for_each(|t| {
+  (1..=2022).for_each(|_| {
     curr_shape = Shape::new(shape_order[shape_index].clone(), (2, highest_height + 4));
     loop {
       curr_shape = curr_shape.wind_blow(jet_order[jet_index], &landed_positions);
