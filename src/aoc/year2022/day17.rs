@@ -76,11 +76,11 @@ impl Shape {
   fn new(shape_type: ShapeType, position: (i64, i64)) -> Self {
     Self {
       directions: match shape_type {
-        ShapeType::FlatLine => vec![(0, 0), (1, 0), (2, 0), (3, 0)],
-        ShapeType::Plus      => vec![(1, 0), (0, 1), (1, 1), (2, 1), (1, 2)],
+        ShapeType::FlatLine   => vec![(0, 0), (1, 0), (2, 0), (3, 0)],
+        ShapeType::Plus       => vec![(1, 0), (0, 1), (1, 1), (2, 1), (1, 2)],
         ShapeType::BackwardsL => vec![(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)],
-        ShapeType::I         => vec![(0, 0), (0, 1), (0, 2), (0, 3)],
-        ShapeType::Square    => vec![(0, 0), (1, 0), (0, 1), (1, 1)],
+        ShapeType::I          => vec![(0, 0), (0, 1), (0, 2), (0, 3)],
+        ShapeType::Square     => vec![(0, 0), (1, 0), (0, 1), (1, 1)],
       },
       position,
     }
