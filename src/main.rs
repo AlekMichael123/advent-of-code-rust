@@ -1,11 +1,10 @@
 use std::fs::read_to_string;
 use std::env;
-
 use advent_of_code_rust::use_day;
 
 fn main() {
   let Ok((year, day)) = get_args() else {
-    println!("Error: get_args failed!");
+    eprintln!("Error: get_args failed!");
     return;
   };
   println!("Year: {}", year);
