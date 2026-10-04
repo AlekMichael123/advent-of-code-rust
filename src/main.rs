@@ -8,6 +8,9 @@ fn main() {
     println!("Error: get_args failed!");
     return;
   };
+  println!("Year: {}", year);
+  println!("Day: {}", day);
+  println!("Solutions:");
   match read_input_file() {
     Ok(data) => match use_day(year, day, &data) {
       Ok(_) => (),
