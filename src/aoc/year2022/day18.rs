@@ -7,19 +7,16 @@ pub fn main(data: &str) {
 }
 
 fn part1(cube_positions: &Vec<CubePosition>) -> u32 {
-  let side_tracking: u32 = cube_positions
+  cube_positions
     .iter()
     .map(|position| {
-      let sides = 
-        cube_positions
+        6 - cube_positions
           .iter()
           .map(|cube_position| position.is_adjacent(cube_position))
           .filter(|s| *s)
-          .count();
-      6 - sides as u32
+          .count() as u32
     })
-    .sum();
-  side_tracking  
+    .sum()
 }
 
 fn parse_input(data: &str) -> Vec<CubePosition> {
