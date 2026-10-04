@@ -10,11 +10,11 @@ fn part1(cube_positions: &Vec<CubePosition>) -> u32 {
   cube_positions
     .iter()
     .map(|position| {
-        6 - cube_positions
-          .iter()
-          .map(|cube_position| position.is_adjacent(cube_position))
-          .filter(|s| *s)
-          .count() as u32
+      6 - cube_positions
+        .iter()
+        .map(|cube_position| position.is_adjacent(cube_position))
+        .filter(|s| *s)
+        .count() as u32
     })
     .sum()
 }
